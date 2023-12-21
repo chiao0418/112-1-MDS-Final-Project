@@ -1,0 +1,26 @@
+#map {
+    height: 75vh;
+}
+
+.background{
+    flex: content;
+    background-color: rgb(220, 228, 246);
+    min-height: 100vh;
+}
+.container{
+    margin: 10px auto;
+    flex: auto;
+}
+
+.nav{
+    background-color: #3a4768;
+}
+
+.nav h2{
+    color: aliceblue;
+}
+
+.control-panel{
+    display: flex;
+    align-items: center;
+}

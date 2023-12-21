@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+
+    <!-- Customize -->
+    <script src="./static/leaflet-color-markers.js"></script>
+    <script src="./static/app.js"></script>
+    <link rel="stylesheet" href="./static/app.css">
+
+    <!-- Main -->
+    <script>
+        if(navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(successGPS, errorGPS);
+        } else {
+            window.alert('您的裝置不具備GPS，無法使用此功能');
+            center = [25.0173405, 121.5397518]
+            render_map(center)
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <div class="background">
+        <div class="nav">
+            <div class="container">
+                <h2>台北市交通路網安全預測系統</h2>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="control-panel">
+                <div class="m-3">
+                    <select class="form-select" id="district_selector" style="min-width: 180px;">
+                        <option selected value=center>跳轉行政區</option>
+                        {% for district in district_list %}
+                        <option value="{{ district[0] }}">{{ district[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="m-3">
+                    <select class="form-select" id="weekend_selector" style="min-width: 180px;">
+                        <option selected value=''>選擇週間</option>
+                        {% for weekend in weekend_list %}
+                        <option value="{{ weekend }}">{{ weekend }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="m-3">
+                    <select class="form-select" id="time_selector" style="min-width: 180px;">
+                        <option selected value=''>選擇時段</option>
+                        {% for time in time_list %}
+                        <option value="{{ time }}">{{ time }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="m-3">
+                    <select class="form-select" id="climate_selector" style="min-width: 180px;">
+                        <option selected value=''>選擇氣候</option>
+                        {% for climate in climate_list %}
+                        <option value="{{ climate }}">{{ climate }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="div">
+                    <div id="predict-btn" class="btn btn-primary rounded-pill px-3">
+                        預測！
+                    </div>
+                </div>
+                
+            </div>
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <script>
+        $('#district_selector').on('change', function(){
+            let target = eval($(this).val())
+            console.log(target)
+            map.flyTo(target, zoom)
+        })
+
+        $('#predict-btn').on('click', function(){
+            let weekend = $('#weekend_selector').val();
+            let time = $('#time_selector').val();
+            let climate = $('#climate_selector').val();
+
+            if ([weekend, time, climate].some(x => x == '')){
+                alert('請選擇週間、時段及氣候！');
+            }else{
+                if (predict_layer != undefined){
+                    map.removeLayer(predict_layer)
+                }
+                prediction_drawer(weekend, time, climate);
+            };
+        })
+    </script>
+    
+</body>
+</html>
